@@ -1,2 +1,3 @@
-# Express-pairing-code
-Baileys Session Gen Using Express
+# *KHAN MD PAIR*
+
+Frok The Repo Don't Forget To Give Star ⭐ 
