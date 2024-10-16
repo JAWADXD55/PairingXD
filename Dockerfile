@@ -1,15 +1,19 @@
-FROM node:alpine
+FROM node:lts-buster
 
-WORKDIR /app
+RUN apt-get update && \
+  apt-get install -y \
+  ffmpeg \
+  imagemagick \
+  webp && \
+  apt-get upgrade -y && \
+  rm -rf /var/lib/apt/lists/*
 
-COPY package*.json ./
+COPY package.json .
 
-RUN npm install --platform=linuxmusl
+RUN npm install && npm install -g qrcode-terminal pm2
 
 COPY . .
 
-RUN npm run build
-
-EXPOSE 8000
+EXPOSE 3000
 
 CMD ["npm", "start"]
