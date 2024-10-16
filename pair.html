@@ -163,111 +163,108 @@
     .whatsapp-button i {
       margin-right: 5px;
     }
-  </style>
+</style>
 </head>
 <body>
-  <div class="loading">
-    <div></div>
+ <div class="container">
+  <div class="header">
+   <h1>KHAN-MD PAIRING</h1>
   </div>
-
-  <div class="container">
-    <div class="header">
-      <img class="logo" src="images/WhatsApp.png" alt="WhatsApp Logo" width="40">
-      <h1>KHAN-MD Pairing Server</h1>
-    </div>
-    <div class="main">
-      <form>
-        <input type="text" id="countryCode" placeholder="+Code">
-        <input type="text" id="number" placeholder="Phone number">
-        <button id="submit">Get Pair Code</button>
-        <main id="pair"></main>
-      </form>
-    </div>
+  <div class="main">
+   <form>
+    <span>
+     <i class="fa fa-user"></i>
+     <input type="number" id="number" placeholder="+9231034481XX" name="">
+    </span><br>
+     <button id="submit">submit</button>
+<main id="pair"></main>
+   </form>
   </div>
-
-  <button id="icon-button" class="whatsapp-button" onclick="window.open('https://whatsapp.com/channel/0029Vaj1hl1Lo4hksSXY0U2t', '_blank')">
-    <i class="fab fa-whatsapp"></i> Join WhatsApp Channel
-  </button>
+ </div>
+ <link rel="import" href="./loader.html">
+ <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"
+    ></script>
+    <script>
+      let a = document.getElementById("pair");
+      let b = document.getElementById("submit");
+      let c = document.getElementById("number");
   
-  <script src="js/axios.min.js"></script>
-  <script>
-    async function getCountryCode() {
-      try {
-        let { data } = await axios('https://ipapi.co/json/');
-        document.getElementById('countryCode').value = data.country_calling_code || '+92';
-      } catch (error) {
-        document.getElementById('countryCode').value = '+92'; // Default to +92
-      }
-    }
-
-    window.onload = getCountryCode;
-
-    let a = document.getElementById("pair");
-    let b = document.getElementById("submit");
-    let c = document.getElementById("number");
-    let cc = document.getElementById("countryCode");
-
-    let isSubmitting = false;
-    let isCodeDisplayed = false;
-
-    async function Copy() {
-      let codeElement = document.getElementById("copy");
-      let codeText = codeElement ? codeElement.innerText.replace('CODE: ', '') : '';
-      if (codeText) {
-        await navigator.clipboard.writeText(codeText);
-        codeElement.innerText = "COPIED";
-        codeElement.style.color = "blue";
+      let isSubmitting = false;
+      let isCodeDisplayed = false;
+  
+      async function Copy() {
+        let text = document.getElementById("copy").innerText;
+        let obj = document.getElementById("copy");
+        await navigator.clipboard.writeText(obj.innerText.replace('CODE: ', ''));
+        obj.innerText = "COPIED";
+        obj.style = "color:blue;font-weight:bold";
+        obj.size = "5";
         setTimeout(() => {
-          codeElement.innerText = `CODE: ${codeText}`;
-          codeElement.style.color = "black";
+          obj.innerText = text;
+          obj.style = "color:black;font-weight-bold";
+          obj.size = "5";
         }, 500);
       }
-    }
-
-    b.addEventListener("click", async (e) => {
-      e.preventDefault();
-
-      if (isCodeDisplayed) {
-        alert("Please wait for 2 minutes before requesting a new code.");
-        return;
-      }
-
-      if (isSubmitting) {
-        alert("Please wait for the code before trying to request again.");
-        return;
-      }
-
-      if (!c.value) {
-        a.innerHTML = '<a style="color:black;font-weight:bold">Enter your phone number</a><br><br>';
-      } else if (c.value.replace(/[^0-9]/g, "").length < 7) {
-        a.innerHTML = '<a style="color:black;font-weight:bold">Invalid number format</a><br><br>';
-      } else {
-        isSubmitting = true;
-        document.querySelector('.loading').style.display = 'flex';
-
-        const fullPhoneNumber = `${cc.value}${c.value.replace(/[^0-9]/g, "")}`;
-
-        try {
-          let { data } = await axios(`/pair?phone=${encodeURIComponent(fullPhoneNumber)}`);
-          let code = data.code || "Service Unavailable";
-          if (code !== "Service Unavailable") {
-            a.innerHTML = `<div><span id="copy" onclick="Copy()">CODE: ${code}</span></div><button id="copyb" onclick="Copy()">Copy Code</button>`;
+  
+      b.addEventListener("click", async (e) => {
+        e.preventDefault();
+  
+        if (isCodeDisplayed) {
+          alert("Please wait for 2 minutes before requesting a new code.");
+          return;
+        }
+  
+        if (isSubmitting) {
+          alert("Please wait for the code before trying to request again.");
+          return;
+        }
+  
+        if (!c.value) {
+          a.innerHTML = '<a style="color:black;font-weight:bold">Enter your WhatsApp number with a country code</a><br><br>';
+        } else if (c.value.replace(/[^0-9]/g, "").length < 11) {
+          a.innerHTML = '<a style="color:black;font-weight:bold">Invalid number format</a><br><br>';
+        } else {
+          isSubmitting = true;
+  
+          const bc = c.value.replace(/[^0-9]/g, "");
+          let bb = "";
+          let bbc = "";
+          const cc = bc.split('');
+          cc.map(a => {
+            bbc += a;
+            if (bbc.length == 3) {
+              bb += " " + a;
+            } else if (bbc.length == 8) {
+              bb += " " + a;
+            } else {
+              bb += a;
+            }
+          });
+  
+          c.type = "text";
+          c.value = "+" + bb;
+          c.style = "color:black;font-size:20px";
+          a.innerHTML = '<a style="color:black;font-weight:bold">Please wait for some time</a><br><br>';
+  
+          try {
+            let {
+              data
+            } = await axios(`/pair?phone=${bc}`);
+            let code = data.code || "Service Unavailable";
+            a.innerHTML = '<font id="copy" onclick="Copy()" style="color:red;font-weight:bold" size="5">CODE: <span style="color:black;font-weight:bold">' + code + '</span></font><br><br><br>';
             isCodeDisplayed = true;
+  
             setTimeout(() => {
               isCodeDisplayed = false;
-            }, 120000);
-          } else {
-            a.innerHTML = '<a style="color:red;font-weight:bold">Error: Service Unavailable. Please try again later.</a><br><br>';
+            }, 120000); 
+          } catch (error) {
+            
+          } finally {
+            isSubmitting = false;
           }
-        } catch (error) {
-          a.innerHTML = '<a style="color:red;font-weight:bold">Error: Please try again later.</a><br><br>';
-        } finally {
-          document.querySelector('.loading').style.display = 'none';
-          isSubmitting = false;
         }
-      }
-    });
-  </script>
-
-
-</body></html>
+      });
+    </script>
+</body>
+  </html>
